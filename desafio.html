@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESAFIO</title>
+</head>
+
+<body>
+    <h1>Nome do produto</h1>
+    <input id="inputNome" type="text"><br>
+    <h1>Código do produto</h1>
+    <input id="inputCodigo" type="text"><br>
+    <h1>Quantidade do produto</h1>
+    <input type="number" id="inputQtd"><br>
+    <button onClick="cadastrar()">Cadastrar Produto</button>
+    <button onClick="repor()">Repor Estoque</button>
+    <button onClick="vender()">Vender estoque</button>
+    <button onClick="relatorio()">Exibir estoque</button><br>
+    <div id="div_mensagem"></div>
+    <div id="div_repo"></div>
+</body>
+
+</html>
+<script>
+    var nome = ["Bolacha"]
+    var codigo = ["1234"]
+    var qtdProd = [10]
+    var qtdVenda = [15]
+    var iNome;
+    var iCodigo;
+    var iQtd;
+    function cadastrar() {
+        var valid1;
+        var valid2;
+        if (validacao()) {
+            for (var i = 0; i < nome.length; i++) {
+                if (nome[i] == iNome) {
+                    div_mensagem.innerHTML = `Produto já registrado.`
+                    valid1 = false;
+                    break;
+                } else {
+                    valid1 = true;
+                }
+                if (codigo[i] == iCodigo) {
+                    div_mensagem.innerHTML = `Código já existente.`
+                    valid1 = false;
+                    break;
+                } else {
+                    var valid2 = true;
+                }
+            }
+        }
+        if (valid1 && valid2) {
+            nome.push(iNome);
+            codigo.push(iCodigo);
+            qtdProd.push(iQtd);
+            qtdVenda.push(0);
+            div_mensagem.innerHTML = `Produto ${iNome} registrado com sucesso.`
+        }
+    }
+    function repor() {
+        if (validacao()) {
+            for (var i = 0; i < nome.length; i++) {
+                if (nome[i] != iNome) {
+                    var erro1 = true;
+                }
+                if (codigo[i] != iCodigo) {
+                    var erro2 = true;
+                }
+                if (nome[i] == iNome && codigo[i] == iCodigo && iQtd >= 1) { // 10 bananinhas no índice 2; qtdProd.push(30);    
+                    erro1 = false;
+                    erro2 = false;
+                    qtdProd[i] += iQtd;
+                    div_mensagem.innerHTML = `${iQtd} do ${iNome} foi reposto com sucesso.`
+                    relatorio();
+                    break;
+                }
+            }
+            if (erro1 || erro2) {
+                div_mensagem.innerHTML = `Nome e/ou código do produto errados.`
+            }
+        }
+    }
+    function vender() {
+        var erro1 = true;
+        var erro2 = true;
+        if (validacao()) {
+            for (var i = 0; i < nome.length; i++) {
+                if (nome[i] == iNome && codigo[i] == iCodigo) {
+                    erro2 = false;
+                }
+                if (!erro2 && (qtdProd[i] >= iQtd)) {
+                    erro1 = false;
+                } else if (!erro2 && qtdProd[i] < iQtd) {
+                    erro1 = true;
+                    break;
+                }
+                if (!erro1 && !erro2) {
+                    qtdProd[i] -= iQtd;
+                    qtdVenda[i] += iQtd;
+                    div_mensagem.innerHTML = `${iQtd} do produto ${iNome} foi vendido com sucesso.`
+                    relatorio();
+                    break;
+                }
+            }
+            if (erro1) {
+                div_mensagem.innerHTML = `Quantia inserida inválida.`
+            }
+            if (erro2) {
+                div_mensagem.innerHTML += `Nome e/ou código do produto errados.`
+            }
+        }
+    }
+    function relatorio() {
+        div_mensagem.innerHTML = "";
+        var msg = "";
+        var menor = Infinity;
+        var maior = 0;
+        var indiceMaior = 0;
+        var indiceMenor = 0;
+        for (var i = 0; i < nome.length; i++) {
+            if (qtdVenda[i] > maior) {
+                maior = qtdVenda[i];
+                indiceMaior = i;
+            }
+            if (qtdVenda[i] < menor) {
+                menor = qtdVenda[i];
+                indiceMenor = i;
+            }
+            if (qtdProd[i] < 10) {
+                msg = "Precisa repor."
+            } else {
+                msg = "OK."
+            }
+            div_mensagem.innerHTML += `<br>Código: ${codigo[i]} | Produto: ${nome[i]} | Quantidade em estoque: ${qtdProd[i]} (${msg}).`
+        }
+        div_mensagem.innerHTML += `<br>Produto com mais vendas: ${nome[indiceMaior]}; com ${qtdVenda[indiceMaior]} vendas.<br>Produto com menos vendas: ${nome[indiceMenor]}; com ${qtdVenda[indiceMenor]} vendas.`
+    }
+    function validacao() {
+        div_mensagem.innerHTML = ``
+        iNome = inputNome.value;
+        iCodigo = inputCodigo.value;
+        iQtd = inputQtd.value;
+        iQtd = Number(iQtd);
+        if (iNome == "" || iCodigo == "" || iQtd == "") {
+            div_mensagem.innerHTML = `Preencha todos os campos para registrar um novo produto.`
+        } else {
+            if (iQtd < 10) {
+                div_mensagem.innerHTML = `Quantidade de produtos no estoque menor que o mínimo (10)`
+            } else {
+                return true;
+            }
+        }
+    }
+</script>
